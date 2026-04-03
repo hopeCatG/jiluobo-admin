@@ -4,68 +4,22 @@
             <el-page-header :content="$route.meta.title" @back="$router.back()" />
         </el-card>
         <el-card class="mt-4 !border-none" shadow="never">
-            <el-form
-                ref="formRef"
-                class="ls-form"
-                :model="formData"
-                label-width="85px"
-                :rules="rules"
-            >
+            <el-form ref="formRef" class="ls-form" :model="formData" label-width="100px" :rules="rules">
                 <div class="xl:flex">
                     <div>
                         <el-form-item label="文章标题" prop="title">
                             <div class="w-80">
-                                <el-input
-                                    v-model="formData.title"
-                                    placeholder="请输入文章标题"
-                                    type="textarea"
-                                    :autosize="{ minRows: 3, maxRows: 3 }"
-                                    maxlength="64"
-                                    show-word-limit
-                                    clearable
-                                />
+                                <el-input v-model="formData.title" placeholder="请输入文章标题" type="textarea"
+                                    :autosize="{ minRows: 3, maxRows: 3 }" maxlength="64" show-word-limit clearable />
                             </div>
                         </el-form-item>
                         <el-form-item label="文章栏目" prop="cid">
-                            <el-select
-                                class="w-80"
-                                v-model="formData.cid"
-                                placeholder="请选择文章栏目"
-                                clearable
-                            >
-                                <el-option
-                                    v-for="item in optionsData.article_cate"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id"
-                                />
+                            <el-select class="w-80" v-model="formData.cid" placeholder="请选择文章栏目" clearable>
+                                <el-option v-for="item in optionsData.article_cate" :key="item.id" :label="item.name"
+                                    :value="item.id" />
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="文章简介" prop="desc">
-                            <div class="w-80">
-                                <el-input
-                                    v-model="formData.desc"
-                                    placeholder="请输入文章简介"
-                                    type="textarea"
-                                    :autosize="{ minRows: 3, maxRows: 6 }"
-                                    :maxlength="200"
-                                    show-word-limit
-                                    clearable
-                                />
-                            </div>
-                        </el-form-item>
-                        <el-form-item label="摘要" prop="abstract">
-                            <div class="w-80">
-                                <el-input
-                                    type="textarea"
-                                    :autosize="{ minRows: 6, maxRows: 6 }"
-                                    v-model="formData.abstract"
-                                    maxlength="200"
-                                    show-word-limit
-                                    clearable
-                                />
-                            </div>
-                        </el-form-item>
+
                         <el-form-item label="文章封面" prop="image">
                             <div>
                                 <div>
@@ -79,27 +33,23 @@
                                 <el-input v-model="formData.author" placeholder="请输入作者名称" />
                             </div>
                         </el-form-item>
-                        <el-form-item label="排序" prop="sort">
-                            <div>
-                                <el-input-number v-model="formData.sort" :min="0" :max="9999" />
-                                <div class="form-tips">默认为0， 数值越大越排前</div>
-                            </div>
-                        </el-form-item>
-                        <el-form-item label="初始浏览量" prop="click_virtual">
-                            <div>
-                                <el-input-number v-model="formData.click_virtual" :min="0" />
-                            </div>
-                        </el-form-item>
+
+
                         <el-form-item label="文章状态" required prop="is_show">
                             <el-radio-group v-model="formData.is_show">
                                 <el-radio :value="1">显示</el-radio>
                                 <el-radio :value="0">隐藏</el-radio>
                             </el-radio-group>
                         </el-form-item>
+
+
+                        <el-form-item label="地区经纬度" required prop="region">
+                            <location-input v-model="formData.region" />
+                        </el-form-item>
                     </div>
-                    <div class="xl:ml-20">
+                    <div class="xl:flex-1">
                         <el-form-item label="文章内容" prop="content">
-                            <editor v-model="formData.content" :height="667" :width="375" />
+                            <editor v-model="formData.content" height="70vh" width="100%" />
                         </el-form-item>
                     </div>
                 </div>
@@ -117,7 +67,7 @@ import type { FormInstance } from 'element-plus'
 import { articleAdd, articleCateAll, articleDetail, articleEdit } from '@/api/article'
 import { useDictOptions } from '@/hooks/useDictOptions'
 import useMultipleTabs from '@/hooks/useMultipleTabs'
-
+import LocationInput from '@/components/LocationInput/index.vue'
 const route = useRoute()
 const router = useRouter()
 const formData = reactive({
@@ -131,7 +81,8 @@ const formData = reactive({
     click_virtual: 0,
     sort: 0,
     is_show: 1,
-    abstract: ''
+    abstract: '',
+    region: { address: '广州海傍地铁', lat: '113.466026', lng: '22.930545' }
 })
 
 const { removeTab } = useMultipleTabs()
