@@ -3,7 +3,7 @@
         <el-card class="!border-none" shadow="never">
             <el-alert
                 type="warning"
-                title="温馨提示：用于管理网站的分类，只可添加到一级"
+                title="温馨提示：状态隐藏的话，该栏目下的文章前台列表不会显示"
                 :closable="false"
                 show-icon
             />

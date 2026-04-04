@@ -13,9 +13,16 @@
                                     :autosize="{ minRows: 3, maxRows: 3 }" maxlength="64" show-word-limit clearable />
                             </div>
                         </el-form-item>
-                        <el-form-item label="文章栏目" prop="cid">
-                            <el-select class="w-80" v-model="formData.cid" placeholder="请选择文章栏目" clearable>
+                        <el-form-item label="文章州栏目" prop="cid">
+                            <el-select class="w-80" v-model="formData.cid" placeholder="请选择文章栏目" clearable
+                                @change="getArticleSubcateList">
                                 <el-option v-for="item in optionsData.article_cate" :key="item.id" :label="item.name"
+                                    :value="item.id" />
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="区域" prop="article_subcate_id">
+                            <el-select class="w-80" v-model="formData.article_subcate_id" placeholder="请选择区域" clearable>
+                                <el-option v-for="item in articleSubcateList" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </el-form-item>
@@ -46,6 +53,9 @@
                         <el-form-item label="地区经纬度" required prop="region">
                             <location-input v-model="formData.region" />
                         </el-form-item>
+                            <el-form-item label="发布时间" required prop="post_time">
+                            <el-date-picker v-model="formData.post_time" value-format="YYYY-MM-DD HH:mm:ss" type="datetime" placeholder="请选择发布时间" />
+                        </el-form-item>
                     </div>
                     <div class="xl:flex-1">
                         <el-form-item label="文章内容" prop="content">
@@ -68,6 +78,8 @@ import { articleAdd, articleCateAll, articleDetail, articleEdit } from '@/api/ar
 import { useDictOptions } from '@/hooks/useDictOptions'
 import useMultipleTabs from '@/hooks/useMultipleTabs'
 import LocationInput from '@/components/LocationInput/index.vue'
+import { apiArticleSubcateLists } from '@/api/article_subcate'
+
 const route = useRoute()
 const router = useRouter()
 const formData = reactive({
@@ -82,7 +94,9 @@ const formData = reactive({
     sort: 0,
     is_show: 1,
     abstract: '',
-    region: { address: '广州海傍地铁', lat: '113.466026', lng: '22.930545' }
+    article_subcate_id: '',
+    post_time: '',
+    region: { address: '', lat: '', lng: '' }
 })
 
 const { removeTab } = useMultipleTabs()
@@ -98,9 +112,36 @@ const getDetails = async () => {
     })
     Object.keys(formData).forEach((key) => {
         //@ts-ignore
-        formData[key] = data[key]
+        if (key === 'region') {
+            let obj = JSON.parse(data['latLng']);
+            formData.region = {
+                address: data.city,
+                lat: obj.coordinates[1],
+                lng: obj.coordinates[0]
+            }
+        }
+        else if (key === 'cid') {
+            formData[key] = Number(data[key])
+            getArticleSubcateList()
+        } else {
+            formData[key] = data[key]
+        }
     })
+
+    console.log(formData)
 }
+
+const articleSubcateList = ref([])
+
+const getArticleSubcateList = async () => {
+    const data = await apiArticleSubcateLists({
+        article_cate_id: formData.cid,
+        page_no: 1,
+        page_size: 1000
+    })
+    articleSubcateList.value = data?.lists || []
+}
+
 
 const { optionsData } = useDictOptions<{
     article_cate: any[]
@@ -112,10 +153,17 @@ const { optionsData } = useDictOptions<{
 
 const handleSave = async () => {
     await formRef.value?.validate()
+    let form = JSON.parse(JSON.stringify(formData))
+    form.city = form.region.address
+    form.latLng = JSON.stringify({
+        type: "Point",
+        coordinates: [form.region.lng, form.region.lat]
+    })
+
     if (route.query.id) {
-        await articleEdit(formData)
+        await articleEdit(form)
     } else {
-        await articleAdd(formData)
+        await articleAdd(form)
     }
     removeTab()
     router.back()

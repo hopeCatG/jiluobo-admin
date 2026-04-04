@@ -6,15 +6,18 @@
         <div v-if="location">
             经度: {{ location.lng }}, 纬度: {{ location.lat }}
         </div>
-        <div v-if="reverseAddress && reverseAddress.length > 0">地址回显: {{ reverseAddress }}</div>
+        <div v-if="reverseAddress && reverseAddress.length > 0">
+            地址回显: {{ reverseAddress }}
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch, defineEmits } from 'vue'
+import { ref, watch } from 'vue'
 import axios from 'axios'
 
-const AMAP_KEY = 'c66071b0f92594199fd7a82821bd46a6'
+// 👉 换成你的 OpenCage key
+const OPENCAGE_KEY = '7316aad16ac84775b09066ebf005dc38'
 
 const props = defineProps({
     modelValue: {
@@ -25,7 +28,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const query = ref(props.modelValue.address || '')
+const query = ref('')
 const location = ref(
     props.modelValue.lat && props.modelValue.lng
         ? { lat: props.modelValue.lat, lng: props.modelValue.lng }
@@ -41,6 +44,7 @@ let timer = null
 const onInput = () => {
     clearTimeout(timer)
     emit('update:modelValue', { address: query.value, lat: '', lng: '' })
+
     if (!query.value.trim()) {
         location.value = null
         reverseAddress.value = ''
@@ -51,20 +55,36 @@ const onInput = () => {
     timer = setTimeout(fetchLocation, 500)
 }
 
-// 地址 → 经纬度
+// 🌍 地址 → 经纬度（OpenCage）
 const fetchLocation = async () => {
     loading.value = true
     error.value = ''
     location.value = null
     reverseAddress.value = ''
+
     try {
-        const res = await axios.get('https://restapi.amap.com/v3/geocode/geo', {
-            params: { key: AMAP_KEY, address: query.value }
+        const res = await axios.get('https://api.opencagedata.com/geocode/v1/json', {
+            params: {
+                key: OPENCAGE_KEY,
+                q: query.value,
+                language: 'zh',
+                limit: 1
+            }
         })
-        if (res.data.status === '1' && res.data.geocodes.length > 0) {
-            const [lng, lat] = res.data.geocodes[0].location.split(',')
-            location.value = { lng, lat }
-            emit('update:modelValue', { address: query.value, lat, lng })
+
+        if (res.data.results.length > 0) {
+            const result = res.data.results[0]
+            const lat = result.geometry.lat
+            const lng = result.geometry.lng
+
+            location.value = { lat, lng }
+            reverseAddress.value = result.formatted
+
+            emit('update:modelValue', {
+                address: query.value,
+                lat,
+                lng
+            })
         } else {
             error.value = '未找到该地区经纬度'
             emit('update:modelValue', { address: query.value, lat: '', lng: '' })
@@ -78,18 +98,20 @@ const fetchLocation = async () => {
     }
 }
 
-// 经纬度 → 地址（回显）
+// 🌍 经纬度 → 地址（OpenCage 逆地理）
 const fetchReverseAddress = async (lat, lng) => {
     try {
-        const res = await axios.get('https://restapi.amap.com/v3/geocode/regeo', {
+        const res = await axios.get('https://api.opencagedata.com/geocode/v1/json', {
             params: {
-                key: AMAP_KEY,
-                location: `${lng},${lat}`,
-                extensions: 'base'
+                key: OPENCAGE_KEY,
+                q: `${lat},${lng}`,
+                language: 'zh',
+                limit: 1
             }
         })
-        if (res.data.status === '1' && res.data.regeocode) {
-            reverseAddress.value = res.data.regeocode.formatted_address
+
+        if (res.data.results.length > 0) {
+            reverseAddress.value = res.data.results[0].formatted
         } else {
             reverseAddress.value = ''
         }
@@ -99,14 +121,15 @@ const fetchReverseAddress = async (lat, lng) => {
     }
 }
 
-// 监听外部 v-model 更新
+// 监听外部 v-model 更新（用于回显）
 watch(
     () => props.modelValue,
     (newVal) => {
         query.value = newVal.address || ''
+
         if (newVal.lat && newVal.lng) {
             location.value = { lat: newVal.lat, lng: newVal.lng }
-            fetchReverseAddress(newVal.lat, newVal.lng) // 回显地址
+            fetchReverseAddress(newVal.lat, newVal.lng)
         } else {
             location.value = null
             reverseAddress.value = ''

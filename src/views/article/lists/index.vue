@@ -71,9 +71,10 @@
                     min-width="160"
                     show-tooltip-when-overflow
                 />
-                <el-table-column label="栏目" prop="cate_name" min-width="100" />
+                <el-table-column label="州栏目" prop="cate_name" min-width="100" />
+                <el-table-column label="国家" prop="city_name" min-width="100" />
+                <el-table-column label="地址" prop="city" min-width="100" />
                 <el-table-column label="作者" prop="author" min-width="120" />
-                <el-table-column label="浏览量" prop="click" min-width="100" />
                 <el-table-column label="状态" min-width="100">
                     <template #default="{ row }">
                         <el-switch
@@ -85,8 +86,7 @@
                         />
                     </template>
                 </el-table-column>
-                <el-table-column label="排序" prop="sort" min-width="100" />
-                <el-table-column label="发布时间" prop="create_time" min-width="120" />
+                <el-table-column label="发布时间" prop="post_time" min-width="120" />
                 <el-table-column label="操作" width="120" fixed="right">
                     <template #default="{ row }">
                         <el-button
