@@ -32,43 +32,6 @@
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="formData.name" placeholder="请输入名称" clearable />
                 </el-form-item>
-                <el-form-item label="归属部门" prop="dept_id">
-                    <el-tree-select
-                        class="flex-1"
-                        v-model="formData.dept_id"
-                        :data="optionsData.dept"
-                        clearable
-                        multiple
-                        node-key="id"
-                        :props="{
-                            value: 'id',
-                            label: 'name',
-                            disabled(data: any) {
-                                return data.status !== 1
-                            }
-                        }"
-                        check-strictly
-                        :default-expand-all="true"
-                        placeholder="请选择上级部门"
-                    />
-                </el-form-item>
-                <el-form-item label="岗位" prop="jobs_id">
-                    <el-select
-                        class="flex-1"
-                        v-model="formData.jobs_id"
-                        clearable
-                        multiple
-                        placeholder="请选择岗位"
-                    >
-                        <el-option
-                            v-for="(item, index) in optionsData.jobs"
-                            :key="index"
-                            :label="item.name"
-                            :value="item.id"
-                        />
-                    </el-select>
-                </el-form-item>
-
                 <!-- 角色选择框 -->
                 <el-form-item label="角色" prop="role_id" v-if="formData.root != 1">
                     <el-select
@@ -131,8 +94,6 @@
 <script lang="ts" setup>
 import type { FormInstance } from 'element-plus'
 
-import { deptAll } from '@/api/org/department'
-import { jobsAll } from '@/api/org/post'
 import { adminAdd, adminDetail, adminEdit } from '@/api/perms/admin'
 import { roleAll } from '@/api/perms/role'
 import Popup from '@/components/popup/index.vue'
@@ -220,17 +181,9 @@ const formRules = reactive({
 })
 const { optionsData } = useDictOptions<{
     role: any[]
-    jobs: any[]
-    dept: any[]
 }>({
     role: {
         api: roleAll
-    },
-    jobs: {
-        api: jobsAll
-    },
-    dept: {
-        api: deptAll
     }
 })
 
