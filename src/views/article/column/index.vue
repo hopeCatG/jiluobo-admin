@@ -24,7 +24,7 @@
             </div>
             <el-table size="large" :data="pager.lists">
                 <el-table-column label="栏目名称" prop="name" min-width="120" />
-                <el-table-column label="文章数" prop="article_count" min-width="120" />
+                <!-- <el-table-column label="文章数" prop="article_count" min-width="120" /> -->
                 <el-table-column label="状态" min-width="120">
                     <template #default="{ row }">
                         <el-switch

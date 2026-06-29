@@ -1,6 +1,6 @@
 <template>
     <div class="location-input">
-        <el-input type="text" v-model="query" placeholder="输入省市区" @input="onInput" class="input-box" />
+        <el-input type="text" v-model="query" placeholder="输入省市区" @input="onInput" class="input-box" :disabled="!editable" />
         <div v-if="loading">查询中...</div>
         <div v-if="error" class="error">{{ error }}</div>
         <div v-if="location">
@@ -16,13 +16,17 @@
 import { ref, watch } from 'vue'
 import axios from 'axios'
 
-// 👉 换成你的 OpenCage key
+
 const OPENCAGE_KEY = '7316aad16ac84775b09066ebf005dc38'
 
 const props = defineProps({
     modelValue: {
         type: Object,
         default: () => ({ address: '', lat: '', lng: '' })
+    },
+    editable: {
+        type: Boolean,
+        default: true
     }
 })
 
@@ -125,6 +129,7 @@ const fetchReverseAddress = async (lat, lng) => {
 watch(
     () => props.modelValue,
     (newVal) => {
+        console.log(newVal)
         query.value = newVal.address || ''
 
         if (newVal.lat && newVal.lng) {

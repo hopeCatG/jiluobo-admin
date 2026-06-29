@@ -10,7 +10,7 @@
                         @keyup.enter="resetPage"
                     />
                 </el-form-item>
-                <el-form-item class="w-[280px]" label="栏目名称">
+                <!-- <el-form-item class="w-[280px]" label="栏目名称">
                     <el-select v-model="queryParams.cid">
                         <el-option label="全部" value />
                         <el-option
@@ -20,7 +20,7 @@
                             :value="item.id"
                         />
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item class="w-[280px]" label="文章状态">
                     <el-select v-model="queryParams.is_show">
                         <el-option label="全部" value />
@@ -71,9 +71,6 @@
                     min-width="160"
                     show-tooltip-when-overflow
                 />
-                <el-table-column label="州栏目" prop="cate_name" min-width="100" />
-                <el-table-column label="国家" prop="city_name" min-width="100" />
-                <el-table-column label="地址" prop="city" min-width="100" />
                 <el-table-column label="作者" prop="author" min-width="120" />
                 <el-table-column label="状态" min-width="100">
                     <template #default="{ row }">
