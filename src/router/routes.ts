@@ -49,10 +49,10 @@ export const constantRoutes: Array<RouteRecordRaw> = [
             }
         ]
     },
-    {
-        path: '/decoration/pc_details',
-        component: () => import('@/views/decoration/pc_details.vue')
-    }
+    // {
+    //     path: '/decoration/pc_details',
+    //     component: () => import('@/views/decoration/pc_details.vue')
+    // }
     // {
     //     path: '/dev_tools',
     //     component: LAYOUT,
