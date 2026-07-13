@@ -3,8 +3,8 @@
         <popup ref="popupRef" :title="popupTitle" :async="true" width="550px" @confirm="handleSubmit"
             @close="handleClose">
             <el-form ref="formRef" :model="formData" label-width="140px" :rules="formRules">
-                <el-form-item label="文章州栏目" prop="cid">
-                    <el-select v-model="formData.cid" placeholder="请选择文章栏目" clearable @change="getArticleSubcateList">
+                <el-form-item label="五大洲" prop="cid">
+                    <el-select v-model="formData.cid" placeholder="请选择五大洲" clearable @change="getArticleSubcateList">
                         <el-option v-for="item in optionsData.article_cate" :key="item.id" :label="item.name"
                             :value="item.id" />
                     </el-select>
