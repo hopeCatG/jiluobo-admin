@@ -16,8 +16,8 @@
 import { ref, watch } from 'vue'
 import axios from 'axios'
 
-
-const OPENCAGE_KEY = '7316aad16ac84775b09066ebf005dc38'
+// https://opencagedata.com/api
+const OPENCAGE_KEY = '577bf0d0e35d46648def08a0e1f0960d'
 
 const props = defineProps({
     modelValue: {
